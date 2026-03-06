@@ -285,9 +285,3 @@ repository.py | Database operations |
 models.py | Database models |
 database.py | Database configuration |
 main.py | Application entry point |
-
----
-
-
-
-
