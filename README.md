@@ -124,7 +124,7 @@ Learners can compare the vulnerable and secure implementations to understand how
 ## Architecture
 
 ```
-Client (Browser / Postman)
+Client (Postman)
         │
         ▼
 FastAPI Controller Layer
@@ -291,3 +291,4 @@ database.py | Database configuration |
 main.py | Application entry point |
 
 ---
+
