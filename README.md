@@ -1,9 +1,3 @@
-# OWASP A07:2025 Authentication Failures Lab
-
-This project is a **hands-on application security lab** demonstrating the vulnerability:
-
-**OWASP Top 10 – A07:2025 Authentication Failures**
-
 Authentication failures occur when applications do not properly verify user identity or protect login mechanisms. These weaknesses may allow attackers to guess passwords, bypass authentication, or gain unauthorized access to user accounts.
 
 This lab allows learners to:
@@ -291,4 +285,5 @@ database.py | Database configuration |
 main.py | Application entry point |
 
 ---
+
 
