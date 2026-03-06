@@ -1,20 +1,31 @@
-1. Vulnerability Selected and Why It Matters
+Authentication failures occur when applications do not properly verify user identity or protect login mechanisms. These weaknesses may allow attackers to guess passwords, bypass authentication, or gain unauthorized access to user accounts.
 
-This lab demonstrates Authentication Failures, which is one of the major risks listed in the OWASP Top 10.
+This lab allows learners to:
 
-Authentication failures occur when applications do not properly verify user identity or protect login mechanisms. Common issues include storing passwords insecurely, allowing weak passwords, and not limiting login attempts.
+Discover authentication weaknesses
 
-If authentication is poorly implemented, attackers may:
+Exploit insecure login mechanisms
 
-Gain unauthorized access to user accounts
+Implement secure authentication protections
 
-Perform brute-force attacks to guess passwords
+Vulnerability Selected and Why It Matters
 
-Access sensitive information
+Authentication systems are the first line of defense in most applications. If authentication is implemented incorrectly, attackers may gain unauthorized access to accounts and sensitive data.
 
-This lab focuses on demonstrating how weak authentication can be exploited and how secure practices such as password hashing and login attempt limits can prevent these attacks.
+Common authentication mistakes include:
 
-2. Target Audience and Learning Objectives
+Storing passwords in plain text
+
+Allowing weak passwords
+
+Not limiting login attempts
+
+Missing account lock mechanisms
+
+These weaknesses can lead to brute-force attacks, credential theft, and account compromise.
+
+This lab demonstrates how these vulnerabilities occur and how secure practices can prevent them.
+
 Target Audience
 
 This lab is designed for:
@@ -23,64 +34,68 @@ Developers learning secure coding practices
 
 Students studying application security
 
-Beginners exploring common web security vulnerabilities
+Beginners exploring OWASP vulnerabilities
 
 Learning Objectives
 
-After completing this lab, learners will be able to:
+After completing this lab learners will be able to:
 
-Understand how authentication failures occur in web applications.
+Understand how authentication failures occur in web applications
 
-Identify insecure authentication implementations.
+Identify insecure authentication implementations
 
-Demonstrate how unlimited login attempts can enable brute-force attacks.
+Demonstrate how unlimited login attempts allow brute-force attacks
 
-Implement secure password storage using hashing.
+Implement secure password storage using bcrypt hashing
 
-Apply protections such as password policies and account lock mechanisms.
+Apply protections such as password policies and account lock mechanisms
 
-3. Lab Scenario (Discover → Exploit → Fix)
+Lab Scenario (Discover → Exploit → Fix)
 
-The lab contains two versions of authentication APIs: a vulnerable version and a secure version.
+The application contains two versions of authentication APIs:
 
-Step 1 – Discover the Vulnerability
+Unsecured authentication API (vulnerable)
 
-Learners interact with the vulnerable authentication endpoints.
+Secured authentication API (fixed implementation)
 
-Example endpoints:
+Step 1 — Discover the Vulnerability
+
+Learners interact with vulnerable endpoints:
 
 POST /api/auth/unsecured/register
 POST /api/auth/unsecured/login
 
-In this version:
+Problems in this version:
 
-Passwords are stored as plain text
+Passwords stored as plain text
 
-Weak passwords are allowed
+Weak passwords accepted
 
-Login attempts are unlimited
+Unlimited login attempts
 
-Learners observe that the system accepts weak passwords and allows repeated login attempts.
+No account lock protection
 
-Step 2 – Exploit the Vulnerability
+Learners observe that weak passwords are accepted and repeated login attempts are allowed.
 
-Learners attempt multiple incorrect login attempts using the unsecured login endpoint.
+Step 2 — Exploit the Vulnerability
+
+Attackers can attempt multiple login attempts using the unsecured endpoint.
 
 Example request:
 
-POST /api/auth/unsecured/login
+POST http://localhost:8000/api/auth/unsecured/login
 {
  "username": "kishor",
  "password": "wrong1"
 }
 
-Because there is no login attempt limit, attackers can continue trying different passwords until they succeed.
+Because there is no limit on login attempts, attackers can repeatedly try passwords until they succeed.
 
-This demonstrates how brute-force attacks can occur when authentication controls are weak.
+This demonstrates how brute-force attacks exploit weak authentication systems.
 
-Step 3 – Fix the Vulnerability
+Step 3 — Fix the Vulnerability
 
-The secure version of the API introduces several protections.
+The secured version of the API introduces stronger authentication controls.
 
 Secure endpoints:
 
@@ -93,96 +108,120 @@ Password hashing using bcrypt
 
 Password strength validation
 
-Tracking failed login attempts
+Failed login attempt tracking
 
-Automatic account lock after repeated failures
+Automatic account lock after multiple failures
 
-Learners can compare the behavior between the vulnerable and secure versions to understand how proper authentication controls prevent attacks.
+Learners can compare the vulnerable and secure implementations to understand how authentication vulnerabilities can be prevented.
 
-4. Technical Design
+Technical Design
 Architecture
-
-The application follows a layered architecture:
-
-Client (Postman / Browser)
+Client (Browser / Postman)
         │
+        ▼
 FastAPI Controller Layer
         │
+        ▼
 Service Layer (Authentication Logic)
         │
+        ▼
 Repository Layer
         │
+        ▼
 SQLite Database
 Technology Stack
-
-Language: Python
-Framework: FastAPI
-Database: SQLite
-ORM: SQLAlchemy
-Security Library: bcrypt
-
-Deployment Approach
-
-The application runs locally for safe experimentation.
-
-Steps to run the lab:
-
-Install dependencies
-
+Component	Technology
+Language	Python
+Framework	FastAPI
+Database	SQLite
+ORM	SQLAlchemy
+Security	bcrypt
+Running the Lab
+1. Install dependencies
 pip install -r requirements.txt
-
-Start the server
-
+2. Start the server
 uvicorn main:app --reload
-
-Access API documentation
-
+3. Open API documentation
 http://localhost:8000/docs
 
-This allows learners to interact with the vulnerable and secure authentication endpoints.
+The Swagger UI allows learners to test both vulnerable and secure authentication APIs.
 
-5. Learning Validation
+Lab Demonstration
+Vulnerable Registration
+POST http://localhost:8000/api/auth/unsecured/register
+{
+  "username": "kishor",
+  "password": "123",
+  "role": "Billing"
+}
 
-Learners validate their understanding by completing the following tasks.
+Weak passwords are accepted.
 
-Task 1
+Secure Registration (Weak Password Rejected)
+POST http://localhost:8000/api/auth/secured/register
+{
+  "username": "rishi",
+  "password": "123",
+  "role": "Billing"
+}
 
-Register a user using the vulnerable API with a weak password.
+Password policy rejects weak passwords.
 
-Task 2
+Secure Registration (Strong Password)
+POST http://localhost:8000/api/auth/secured/register
+{
+  "username": "rishi",
+  "password": "Rishi@123",
+  "role": "Billing"
+}
 
-Attempt multiple incorrect login attempts and observe that the system allows unlimited attempts.
+Password is securely stored using bcrypt hashing.
 
-Task 3
+Unsecured Login (Unlimited Attempts)
+POST http://localhost:8000/api/auth/unsecured/login
+{
+  "username": "kishor",
+  "password": "wrong1"
+}
+{
+  "username": "kishor",
+  "password": "wrong2"
+}
 
-Register a user using the secure API and observe password policy enforcement.
+The system allows unlimited attempts, demonstrating the risk of brute-force attacks.
 
-Task 4
+Secure Login
+POST http://localhost:8000/api/auth/secured/login
+{
+  "username": "rishi",
+  "password": "Rishi@123"
+}
 
-Trigger account lock by exceeding the allowed number of failed login attempts.
+Authentication succeeds using bcrypt password verification.
 
-Task 5
+Learning Validation
 
-Successfully log in using the secure authentication endpoint.
+Learners validate their understanding by completing the following tasks:
 
-Completion of these tasks confirms that learners understand the authentication vulnerability and the implemented security protections.
+Register a user using the unsecured API
 
-Prototype
+Attempt multiple incorrect login attempts
 
-A working prototype of the lab has been implemented using Python FastAPI with SQLite.
+Observe that unlimited attempts are allowed
 
-The prototype includes:
+Register a user using the secured API
 
-Vulnerable authentication endpoints
+Trigger account lock after repeated login failures
 
-Secure authentication endpoints
+Successfully log in using the secure authentication endpoint
 
-Password hashing with bcrypt
+Completion of these tasks demonstrates understanding of authentication vulnerabilities and secure implementations.
 
-Password policy validation
-
-Login attempt tracking
-
-Account lock mechanism
-
-The application is intended for educational purposes only and demonstrates both insecure and secure authentication implementations.
+Repository Structure
+File	Description
+controller.py	API endpoints
+service.py	Authentication logic
+repository.py	Database operations
+models.py	Database models
+database.py	Database configuration
+main.py	Application entry point
